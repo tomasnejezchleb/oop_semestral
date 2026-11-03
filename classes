@@ -1,0 +1,38 @@
+class Event:
+    #třída události s plnou správou účastníků
+    def __init__(self, event_id: int, title: str, category: str,date: str, start_time: str, end_time: str, capacity: int, organizer: str, is_alcohol: bool = False):
+        self.event_id = event_id
+        self.title = title
+        self.category = category
+
+        self.date = datetime.strptime(date, "%Y %m %d").date() #vyžaduje zadání data ve formátu: rok mezera měsíc mezera den (nulové doplňování není nutné-tzn např 3.11. není nutné psát jako 11 03)
+        self.start_time = datetime.strptime(start_time, "%H:%M").time() #vyžaduje zadání času ve formátu: hodiny dvojtečka minuty, nulové doplňování také není nutné
+        self.end_time = datetime.strptime(end_time, "%H:%M").time()
+
+        self.capacity = capacity
+        self.organizer = organizer
+        self.is_alcohol = is_alcohol
+        self.participants = []  # Seznam přihlášených uživatelů
+
+    def is_full(self) -> bool:
+        return len(self.participants) >= self.capacity  
+        #"větší" je tam zbytečný (stačilo by =), ale gemini říkala, že to je dobrý mít- např kdyby se změnila self.capacity,
+        #  program by mohl vesele přidávat další lidi a ten problém jen prohlubovat
+    def add_participant(self, username: str) -> bool:
+        if not self.is_full() and username not in self.participants:
+            self.participants.append(username)
+            return True
+        return False
+
+    def remove_participant(self, username: str) -> bool:
+        if username in self.participants:
+            self.participants.remove(username)
+            return True
+        return False
+
+    def __repr__(self):
+        date_str = self.date.strftime("%d.%m. %Y")  #otáčí to a graficky upravuje datum
+        start_str = self.start_time.strftime("%H:%M")
+        end_str = self.end_time.strftime("%H:%M")
+        
+        return f"Event('{self.title}', {date_str} {start_str} - {end_str}, Volno: {self.capacity - len(self.participants)})"
