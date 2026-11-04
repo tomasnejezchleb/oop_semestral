@@ -1,5 +1,5 @@
 import random
-from datetime import datetime #?????
+from datetime import datetime
 from datetime import time
 from abc import ABC, abstractmethod
 
@@ -83,5 +83,61 @@ class SabotagedAdminUser(User):
         ]
         raise AndySabotageException(random.choice(errors))
 
+class AlcoholIntolerantUser(User):
+    def can_manage_events(self) -> bool:
+        return False
+
+    def perform_admin_action(self, action_desc: str):
+        raise ActionNotAllowedError("Pro tuto akci jsou vyžadována administrátorská práva!")
+
+    def filter_events(self, events: list[Event]) -> list[Event]:
+        # Vyfiltruje akce obsahující alkohol
+        return [e for e in events if not e.is_alcohol]
+
+
+class EarlyBirdUser(User):
+    
+    def __init__(self, name: str, max_hour: str = "18:25"):
+        super().__init__(name)
+        self.max_hour = max_hour 
+        self.max_hour = datetime.strptime(max_hour, "%H:%M").time()
+
+    def can_manage_events(self) -> bool:
+        return False
+
+    def perform_admin_action(self, action_desc: str):
+        raise ActionNotAllowedError("Pro tuto akci jsou vyžadována administrátorská práva!")
+
+    def filter_events(self, events: list[Event]) -> list[Event]:
+        # Vyfiltruje akce, které začínají pozdě
+        return [e for e in events if e.end_time <= self.max_hour]
+
+class EventManager:
+    #třída spravující eventy a usery -vytváření instancí ke classes výše
+    def __init__(self):
+        
+        self.users = {
+            "Eda": AdminUser("Eda"),
+            "Andy": SabotagedAdminUser("Andy"),
+            "Zuzka": AlcoholIntolerantUser("Zuzka"),
+            "Evžen": EarlyBirdUser("Evžen"),
+        }
+        
+        # Pevný seznam počátečních akcí
+        self.events = [
+            Event(1, "Ranní běh", "Sport", "2026 11 28", "6:30", "7:15", 9, "Eda", is_alcohol=False),
+            Event(2, "Python", "Vzdělávání", "2026 12 24", "18:00", "20:00, 3, "Eda", is_alcohol=False),
+            Event(3, "Věže", "Zábava", "2027 7 5", "8:00", "18:00", 4, "Eda", is_alcohol=True),
+            Event(4, "Frisbee", "Zábava", "2026 31 12", "18:00", "23:59", "Eda", is_alcohol=False)
+        ]
+
+    def get_user(self, name: str) -> User:
+        return self.users.get(name)
+
+    def add_event(self, event_id: int, title: str, category: str,date: str, start_time: str, end_time: str, capacity: int, organizer: str, is_alcohol: bool = False):
+        new_id = len(self.events) + 1
+        event = Event(new_id, title, category,date, start_time, end_time, capacity, organizer, is_alcohol)
+        self.events.append(event)
+        return event
 
 
