@@ -4,7 +4,7 @@ from datetime import time
 from abc import ABC, abstractmethod
 
 class Event:
-    #třída události s plnou správou účastníků
+    #třída události
     def __init__(self, event_id: int, title: str, category: str,date: str, start_time: str, end_time: str, capacity: int, organizer: str, is_alcohol: bool = False):
         self.event_id = event_id
         self.title = title
@@ -23,6 +23,7 @@ class Event:
         return len(self.participants) >= self.capacity  
         #"větší" je tam zbytečný (stačilo by =), ale gemini říkala, že to je dobrý mít- např kdyby se změnila self.capacity,
         #  program by mohl vesele přidávat další lidi a ten problém jen prohlubovat
+
     def add_participant(self, username: str) -> bool:
         if not self.is_full() and username not in self.participants:
             self.participants.append(username)
@@ -126,7 +127,7 @@ class EventManager:
         # Pevný seznam počátečních akcí
         self.events = [
             Event(1, "Ranní běh", "Sport", "2026 11 28", "6:30", "7:15", 9, "Eda", is_alcohol=False),
-            Event(2, "Python", "Vzdělávání", "2026 12 24", "18:00", "20:00, 3, "Eda", is_alcohol=False),
+            Event(2, "Python", "Vzdělávání", "2026 12 24", "18:00", "20:00", 3, "Eda", is_alcohol=False),
             Event(3, "Věže", "Zábava", "2027 7 5", "8:00", "18:00", 4, "Eda", is_alcohol=True),
             Event(4, "Frisbee", "Zábava", "2026 31 12", "18:00", "23:59", "Eda", is_alcohol=False)
         ]
@@ -135,6 +136,10 @@ class EventManager:
         return self.users.get(name)
 
     def add_event(self, event_id: int, title: str, category: str,date: str, start_time: str, end_time: str, capacity: int, organizer: str, is_alcohol: bool = False):
+
+        if not user.can_manage_events():
+            raise Exception(f"Uživatel {user.name} nemá oprávnění vytvářet nebo spravovat akce!")
+
         new_id = len(self.events) + 1
         event = Event(new_id, title, category,date, start_time, end_time, capacity, organizer, is_alcohol)
         self.events.append(event)
