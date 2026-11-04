@@ -1,3 +1,8 @@
+import random
+from datetime import datetime #?????
+from datetime import time
+from abc import ABC, abstractmethod
+
 class Event:
     #třída události s plnou správou účastníků
     def __init__(self, event_id: int, title: str, category: str,date: str, start_time: str, end_time: str, capacity: int, organizer: str, is_alcohol: bool = False):
@@ -36,3 +41,47 @@ class Event:
         end_str = self.end_time.strftime("%H:%M")
         
         return f"Event('{self.title}', {date_str} {start_str} - {end_str}, Volno: {self.capacity - len(self.participants)})"
+
+class User(ABC):
+    #Abstraktní předek pro všechny typy uživatelů
+    def __init__(self, name: str):
+        self.name = name
+
+    @abstractmethod
+    def can_manage_events(self) -> bool:
+        pass
+
+    @abstractmethod
+    def perform_admin_action(self, action_desc: str):
+        pass
+
+    def filter_events(self, events: list[Event]) -> list[Event]:
+        return events
+
+class AndySabotageException(Exception): 
+    #speciální vyjímka pro Andyho
+    pass
+
+class AdminUser(User):
+    def can_manage_events(self) -> bool:
+        return True
+
+    def perform_admin_action(self, action_desc: str):
+        return f"[ADMIN] Úspěšně provedeno: {action_desc}"
+
+
+class SabotagedAdminUser(User):
+    def can_manage_events(self) -> bool:
+        return True  # tímto andy projde, ale při volání perform_admin_action se u něj zavolá třída AndySabotageException
+
+    def perform_admin_action(self, action_desc: str):
+        errors = [
+            "Chyba: Server raději předstíral pád, než aby tohle uložil.",
+            "Systém vyhodnotil tvůj požadavek jako otravný a smazal ho.",
+            "Chviličku, systém si musí odpočinout",
+            "Chyba: požadavek se nezpracoval. Třeba někdy příště"
+        ]
+        raise AndySabotageException(random.choice(errors))
+
+
+
