@@ -1,5 +1,5 @@
 import streamlit as st
-from basic_classes import EventManager, AndySabotageException
+from classes import EventManager, AndySabotageException
 
 st.setTitle("Správa akcí")
 
