@@ -1,7 +1,7 @@
 import streamlit as st
 from basic_classes import EventManager, AndySabotageException
 
-st.setTitle("Správa akcí")
+st.title("Správa akcí")
 
 # Inicializace managera v session state, aby se resetem vymazal stav
 if "manager" not in st.session_state:
