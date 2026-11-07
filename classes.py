@@ -103,7 +103,7 @@ class EventManager:
         self.users = {
             "Eda": AdminUser("Eda"),
             "Andy": SabotagedAdminUser("Andy"),
-            "Zuzka": AlcoholIntolerantWord = AlcoholIntolerantUser("Zuzka"),
+            "Zuzka": AlcoholIntolerantUser = AlcoholIntolerantUser("Zuzka"),
             "Evžen": EarlyBirdUser("Evžen"),
         }
         # Opravené datum a správné pořadí argumentů u Frisbee (kapacita 10, organizer Eda)
