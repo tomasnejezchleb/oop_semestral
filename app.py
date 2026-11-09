@@ -22,13 +22,24 @@ st.header(f"Vítej, {current_user.name}!")
 dostupne_akce = current_user.filter_events(manager.events)
 
 st.subheader("Dostupné akce:")
-for akce in dostupne_akce:
-    st.write(f"- **{akce.title}** (Kategorie: {akce.category}, Alkohol: {akce.is_alcohol})")
 
-# Test administrátorské akce / sabotáže
-if st.button("Provést administrátorskou akci"):
-    try:
-        vysledek = current_user.perform_admin_action("Testovací zásah z webu")
-        st.success(vysledek)
-    except AndySabotageException as e:
-        st.error(f"⚠️ Andy úřaduje: {e}")
+for akce in dostupne_akce:
+    # Formátování data a časů pro hezčí výpis
+    date_str = akce.date.strftime("%d. %m. %Y")
+    start_str = akce.start_time.strftime("%H:%M")
+    end_str = akce.end_time.strftime("%H:%M")
+    
+    # Výpočet volných míst
+    volno = akce.capacity - len(akce.participants)
+    
+    # Určení barvy podle kapacity
+    if volno > 0:
+        kapacita_html = f"<span style='color: green; font-weight: bold;'Kapacita {volno}</span>"
+    else:
+        kapacita_html = f"<span style='color: red; font-weight: bold;'kapacita vyčerpána'</span>"
+    
+    # Vykreslení řádku akce pomocí Markdownu s HTML pro barvu
+    st.markdown(
+        f"- **{akce.title}** | *{akce.category}* |  {date_str} |  {start_str} - {end_str} | Kapacita: {kapacita_html}",
+        unsafe_allow_html=True
+    )
