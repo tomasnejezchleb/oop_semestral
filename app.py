@@ -41,6 +41,7 @@ for akce in dostupne_akce:
     st.markdown(
         f"- **{akce.title}** | *{akce.category}* | 📅 {date_str} | ⏰ {start_str} - {end_str} | {kapacita_html}",
         unsafe_allow_html=True
+    )
     
     # Vykreslení řádku akce pomocí Markdownu s HTML pro barvu
     st.markdown(
