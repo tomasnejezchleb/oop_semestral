@@ -33,15 +33,11 @@ for akce in dostupne_akce:
     
     # Určení barvy podle kapacity
     if volno > 0:
-        kapacita_html = f"<span style='color: green; font-weight: bold;>'Kapacita {volno}</span>"
+        kapacita_html = f"<span style= 'color: green; font-weight: bold;'>Kapacita {volno}</span>"
     else:
-        kapacita_html = f"<span style='color: red; font-weight: bold;>'kapacita vyčerpána'</span>"
+        kapacita_html = f"<span style= 'color: red; font-weight: bold;'>Kapacita vyčerpána'</span>"
 
    
-    st.markdown(
-        f"- **{akce.title}** | *{akce.category}* | 📅 {date_str} | ⏰ {start_str} - {end_str} | {kapacita_html}",
-        unsafe_allow_html=True
-    )
     
     # Vykreslení řádku akce pomocí Markdownu s HTML pro barvu
     st.markdown(
