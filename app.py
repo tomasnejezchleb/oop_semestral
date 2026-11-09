@@ -65,7 +65,12 @@ moje_akce = [a for a in manager.events if current_user.name in a.participants]
 
 if not moje_akce:    #testuje prázdnost seznamu
     date_str = akce.date.strftime("%d. %m. %Y")
-
+else:
+    for akce in moje_akce:
+        date_str = akce.date.strftime("%d. %m. %Y")
+        start_str = akce.start_time.strftime("%H:%M")
+        end_str = akce.end_time.strftime("%H:%M")
+        
     col1, col2 = st.columns([3, 1])
 
     with col1:
