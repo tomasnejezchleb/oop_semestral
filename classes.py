@@ -109,7 +109,7 @@ class EventManager:
         # Opravené datum a správné pořadí argumentů u Frisbee (kapacita 10, organizer Eda)
         self.events = [
             Event(1, "Ranní běh", "Sport", "2026 11 28", "6:30", "7:15", 9, "Eda", is_alcohol=False),
-            Event(2, "Python", "Vzdělávání", "2026 12 24", "18:00", "20:00", 3, "Eda", is_alcohol=False),
+            Event(2, "Python", "Vzdělávání", "2026 12 24", "18:00", "20:00", 2, "Eda", is_alcohol=False),
             Event(3, "Věže", "Zábava", "2027 7 5", "8:00", "18:00", 4, "Eda", is_alcohol=True),
             Event(4, "Frisbee", "Zábava", "2026 12 31", "18:00", "23:59", 10, "Eda", is_alcohol=False)
         ]
