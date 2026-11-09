@@ -71,15 +71,15 @@ else:
         start_str = akce.start_time.strftime("%H:%M")
         end_str = akce.end_time.strftime("%H:%M")
         
-    col1, col2 = st.columns([3, 1])
+        col1, col2 = st.columns([3, 1])
 
-    with col1:
-        st.write(f"**{akce.title}**    *{akce.category}*    {date_str}    {start_str} - {end_str}    {kapacita_html}")
+        with col1:
+            st.write(f"**{akce.title}**    *{akce.category}*    {date_str}    {start_str} - {end_str}")
 
-    with col2:
-        if st.button("Odhlásit", key = f"odhlas_{akce.event_id}"):
-            akce.remove_participant(current_user.name)
-            st.success(f"Byl jsi odhlášen z akce {akce.title}")
-            st.rerun()
+        with col2:
+            if st.button("Odhlásit", key = f"odhlas_{akce.event_id}"):
+                akce.remove_participant(current_user.name)
+                st.success(f"Byl jsi odhlášen z akce {akce.title}")
+                st.rerun()
 
 
