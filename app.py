@@ -40,8 +40,8 @@ for akce in dostupne_akce:
 
     with col1:
         st.markdown(
-            f"**{akce.title}**    *{akce.category}*    {date_str}    {start_str} - {end_str}    {kapacita_html}"
-            )
+            f"**{akce.title}**    *{akce.category}*    {date_str}    {start_str} - {end_str}    {kapacita_html}",
+            unsafe_allow_html=True)
 
     with col2:
         already_signed = current_user.name in akce.participants
@@ -74,7 +74,7 @@ else:
         col1, col2 = st.columns([3, 1])
 
         with col1:
-            st.markdown(f"**{akce.title}**    *{akce.category}*    {date_str}    {start_str} - {end_str}")
+            st.markdown(f"**{akce.title}**    *{akce.category}*    {date_str}    {start_str} - {end_str}", unsafe_allow_html=True)
 
         with col2:
             if st.button("Odhlásit", key = f"odhlas_{akce.event_id}"):
