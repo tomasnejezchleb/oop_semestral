@@ -33,7 +33,7 @@ for akce in dostupne_akce:
     if volno > 0:
         kapacita_html = f"<span style= 'color: green; font-weight: bold;'>Kapacita {volno}</span>"
     else:
-        kapacita_html = f"<span style= 'color: red; font-weight: bold;'>Kapacita vyčerpána'</span>"
+        kapacita_html = f"<span style= 'color: red; font-weight: bold;'>Kapacita vyčerpána</span>"
 
 
     col1, col2 = st.columns([3, 1])
@@ -74,7 +74,7 @@ else:
         col1, col2 = st.columns([3, 1])
 
         with col1:
-            st.write(f"**{akce.title}**    *{akce.category}*    {date_str}    {start_str} - {end_str}")
+            st.markdown(f"**{akce.title}**    *{akce.category}*    {date_str}    {start_str} - {end_str}")
 
         with col2:
             if st.button("Odhlásit", key = f"odhlas_{akce.event_id}"):
