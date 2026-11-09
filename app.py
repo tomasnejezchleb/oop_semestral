@@ -18,7 +18,8 @@ st.sidebar.write(f"**Může spravovat:** {current_user.can_manage_events()}")
 
 # Hlavní stránka – ukázka filtrování akcí pro vybraného uživatele
 st.header(f"Vítej, {current_user.name}!")
-dostupne_akce = current_user.filter_events(manager.events)
+filtr_dle_usera = current_user.filter_events(manager.events)
+dostupne_akce = [a for a in filtr_dle_usera if current_user.name not in a.participants]
 
 st.subheader("Dostupné akce:")
 
