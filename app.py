@@ -1,7 +1,6 @@
 import streamlit as st
 from classes import EventManager, AndySabotageException
 
-st.title("Správa akcí")
 
 # Inicializace managera v session state, aby se resetem vymazal stav
 if "manager" not in st.session_state:
@@ -34,9 +33,9 @@ for akce in dostupne_akce:
     
     # Určení barvy podle kapacity
     if volno > 0:
-        kapacita_html = f"<span style='color: green; font-weight: bold;'Kapacita {volno}</span>"
+        kapacita_html = f"<span style='color: green; font-weight: bold;>'Kapacita {volno}</span>"
     else:
-        kapacita_html = f"<span style='color: red; font-weight: bold;'kapacita vyčerpána'</span>"
+        kapacita_html = f"<span style='color: red; font-weight: bold;>'kapacita vyčerpána'</span>"
     
     # Vykreslení řádku akce pomocí Markdownu s HTML pro barvu
     st.markdown(
