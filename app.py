@@ -41,7 +41,7 @@ for akce in dostupne_akce:
 
     with col1:
         st.markdown(
-            f"**{akce.title}**    *{akce.category}*    {date_str}    {start_str} - {end_str}    {kapacita_html}
+            f"**{akce.title}**    *{akce.category}*    {date_str}    {start_str} - {end_str}    {kapacita_html}"
             )
 
     with col2:
