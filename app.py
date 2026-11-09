@@ -26,11 +26,9 @@ for akce in dostupne_akce:
     date_str = akce.date.strftime("%d. %m. %Y")
     start_str = akce.start_time.strftime("%H:%M")
     end_str = akce.end_time.strftime("%H:%M")
-    
-    # Výpočet volných míst
+  
     volno = akce.capacity - len(akce.participants)
     
-    # Určení barvy podle kapacity
     if volno > 0:
         kapacita_html = f"<span style= 'color: green; font-weight: bold;'>Kapacita {volno}</span>"
     else:
@@ -48,12 +46,12 @@ for akce in dostupne_akce:
         already_signed = current_user.name in akce.participants
 
         if already_signed:
-            st.write(f"<span style = 'color: green; font-weight: bold;'> Přihlášen")
+            st.write("Přihlášen")
         else:
             if st.button("Přihlásit", key = f"prihlas_{akce.event_id}"):
                 uspech = akce. add_participant(current_user.name)
                 if uspech or current_user.name in akce.participants:
-                    st.success(f"<span style = 'color:green'> Jsi přihlášen")
+                    st.success("Jsi přihlášen")
                     st.rerun()
                 else:
                     st.error("Akce je plná nebo si se už přihlásil")
