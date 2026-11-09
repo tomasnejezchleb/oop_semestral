@@ -64,18 +64,18 @@ st.subheader("Přihlášené akce:")
 
 moje_akce = [a for a in manager.events if current_user.name in a.participants]
 
-if not in moje_akce:
+if not moje_akce:    #testuje prázdnost seznamu
     date_str = akce.date.strftime("%d. %m. %Y")
 
     col1, col2 = st.columns([3, 1])
 
     with col1:
-        st.write(f"**{akce.title}**    *{akce.category}*    {date_str}    {start_str} - {end_str}    {kapacita_html})
+        st.write(f"**{akce.title}**    *{akce.category}*    {date_str}    {start_str} - {end_str}    {kapacita_html}")
 
     with col2:
-        if st.button(f" <span style = 'color: red; font-weight: bold;'> Odhlásit", key = f"odhlas_{akce.event_id}")
-        akce.remove_participant(current_user.name)
-        st.success(f"Byl jsi odhlášen z akce {akce.title}")
-        st.rerun
+        if st.button("Odhlásit", key = f"odhlas_{akce.event_id}"):
+            akce.remove_participant(current_user.name)
+            st.success(f"Byl jsi odhlášen z akce {akce.title}")
+            st.rerun()
 
 
