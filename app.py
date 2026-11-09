@@ -23,7 +23,6 @@ dostupne_akce = current_user.filter_events(manager.events)
 st.subheader("Dostupné akce:")
 
 for akce in dostupne_akce:
-    # Formátování data a časů pro hezčí výpis
     date_str = akce.date.strftime("%d. %m. %Y")
     start_str = akce.start_time.strftime("%H:%M")
     end_str = akce.end_time.strftime("%H:%M")
@@ -37,10 +36,46 @@ for akce in dostupne_akce:
     else:
         kapacita_html = f"<span style= 'color: red; font-weight: bold;'>Kapacita vyčerpána'</span>"
 
-   
-    
-    # Vykreslení řádku akce pomocí Markdownu s HTML pro barvu
-    st.markdown(
-        f"- **{akce.title}** | *{akce.category}* |  {date_str} |  {start_str} - {end_str} | Kapacita: {kapacita_html}",
-        unsafe_allow_html=True
-    )
+
+    col1, col2 = st.columns([3, 1])
+
+    with col1:
+        st.markdown(
+            f"**{akce.title}**    *{akce.category}*    {date_str}    {start_str} - {end_str}    {kapacita_html}
+            )
+
+    with col2:
+        already_signed = current_user.name in akce.participants
+
+        if already_signed:
+            st.write(f"<span style = 'color: green; font-weight: bold;'> Přihlášen")
+        else:
+            if st.button("Přihlásit", key = f"prihlas_{akce.event_id}"):
+                uspech = akce. add_participant(current_user.name)
+                if uspech or current_user.name in akce.participants:
+                    st.success(f"<span style = 'color:green'> Jsi přihlášen")
+                    st.rerun()
+                else:
+                    st.error("Akce je plná nebo si se už přihlásil")
+
+st.divider()
+
+st.subheader("Přihlášené akce:")
+
+moje_akce = [a for a in manager.events if current_user.name in a.participants]
+
+if not in moje_akce:
+    date_str = akce.date.strftime("%d. %m. %Y")
+
+    col1, col2 = st.columns([3, 1])
+
+    with col1:
+        st.write(f"**{akce.title}**    *{akce.category}*    {date_str}    {start_str} - {end_str}    {kapacita_html})
+
+    with col2:
+        if st.button(f" <span style = 'color: red; font-weight: bold;'> Odhlásit", key = f"odhlas_{akce.event_id}")
+        akce.remove_participant(current_user.name)
+        st.success(f"Byl jsi odhlášen z akce {akce.title}")
+        st.rerun
+
+
