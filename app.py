@@ -18,7 +18,7 @@ st.sidebar.write(f"**Může spravovat:** {current_user.can_manage_events()}")
 
 st.sidebar.divider()
 st.sidebar.subheader("Test")
-if st.sidebar.buttno("Provést administrátorskou akci"):
+if st.sidebar.button("Provést administrátorskou akci"):
     try:
         vysledek = current_user.perform_admin_action("úprava")
         st.sidebar.success(vysledek)
@@ -93,4 +93,42 @@ else:
                 st.success(f"Byl jsi odhlášen z akce {akce.title}")
                 st.rerun()
 
+if current_user.can_manage_events():
+    st.divider()
+    st.header("administrátorský panel")
 
+    tab_akce, tab_nova_akce, tab_uzivatele = st.tabs(["Správa akcí", "Přidat akci", "Správa uživatelů"])    #vytvoření tlačítek
+
+    with tab_akce:
+        st.subheader("Seznam akcí")
+        for akce in manager.events:
+            
+            col1, col2 = st.columns([3, 1])
+            with col1:
+                st.write(f"**{akce.title}** ({akce.date.strftime('%d.%m.%Y')})")
+            with col2:
+                if st.button('Smazat', key=f"admin_del_{akce.event_id}"):
+                    manager.delete_event(akce.event_id)
+                    st.rerun()
+
+            
+            with st.expander(f"Upravit: {akce.title}"):
+                with st.form(key=f"edit_form_{akce.event_id}"):
+                    
+                    new_title = st.text_input("Název", value=akce.title)
+                    new_cat = st.text_input("Kategorie", value=akce.category)
+                    new_date = st.text_input("Datum", value=akce.date.strftime("%Y %m %d"))
+                    new_start = st.text_input("Začátek (HH:MM)", value=akce.start_time.strftime("%H:%M"))
+                    new_end = st.text_input("Konec (HH:MM)", value=akce.end_time.strftime("%H:%M"))
+                    new_cap = st.number_input("Kapacita", value=akce.capacity)
+                    new_org = st.text_input("Organizátor", value=akce.organizer)
+                    new_alk = st.checkbox("Alkohol True?", value=akce.is_alcohol)
+                    
+                    if st.form_submit_button("Uložit změny"):
+                    
+                        manager.update_event(
+                            akce.event_id, new_title, new_cat, new_date, 
+                            new_start, new_end, int(new_cap), new_org, new_alk
+                        )
+                        st.success("Upraveno!")
+                        st.rerun()
