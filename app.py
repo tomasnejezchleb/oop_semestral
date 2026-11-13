@@ -93,7 +93,7 @@ else:
                 st.success(f"Byl jsi odhlášen z akce {akce.title}")
                 st.rerun()
 
-if current_user.can_manage_events():
+if current_user.can_manage_events() and current_user.name != "Andy":
     st.divider()
     st.header("administrátorský panel")
 
