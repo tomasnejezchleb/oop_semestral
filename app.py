@@ -16,6 +16,17 @@ current_user = manager.get_user(selected_user_name)
 st.sidebar.write(f"**Role:** {type(current_user).__name__}")
 st.sidebar.write(f"**Může spravovat:** {current_user.can_manage_events()}")
 
+st.sidebar.divider()
+st.sidebar.subheader("Test")
+if st.sidebar.buttno("Provést administrátorskou akci"):
+    try:
+        vysledek = current_user.perform_admin_action("úprava")
+        st.sidebar.success(vysledek)
+    except AndySabotageException as e:
+        st.sidebar.error(str(e))
+    except Exception as e:
+        st.sidebar.error(str(e))
+
 # Hlavní stránka – ukázka filtrování akcí pro vybraného uživatele
 st.header(f"Vítej, {current_user.name}!")
 filtr_dle_usera = current_user.filter_events(manager.events)
