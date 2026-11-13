@@ -1,6 +1,41 @@
 import random
 from datetime import datetime, time
 from abc import ABC, abstractmethod
+import sqlite3
+
+DB_NAME = "events_app.db"
+
+def init_db():
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    
+#vytváří tabulku- první argument je sloupec, pak dat typ a nakonec omezení
+#omezení PRIMARY KEY zaručuje unikátnost tohoto parametru a to že musí být vyplněna
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS events (    
+            event_id INTEGER PRIMARY KEY,        
+            title TEXT NOT NULL,
+            category TEXT NOT NULL,
+            date TEXT NOT NULL,
+            start_time TEXT NOT NULL,
+            end_time TEXT NOT NULL,
+            capacity INTEGER NOT NULL,
+            organizer TEXT NOT NULL,
+            is_alcohol BOOLEAN NOT NULL
+        )
+    ''')
+#tahle tabulka vytváří vazbu event<->uživatel
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS participants (        
+            event_id INTEGER,
+            username TEXT,
+            FOREIGN KEY(event_id) REFERENCES events(event_id),
+            PRIMARY KEY(event_id, username))
+            ''')
+    conn.commit()
+    conn.close()
+
+            
 
 class Event:
     def __init__(self, event_id: int, title: str, category: str, date: str, start_time: str, end_time: str, capacity: int, organizer: str, is_alcohol: bool = False):
@@ -13,20 +48,41 @@ class Event:
         self.capacity = capacity
         self.organizer = organizer
         self.is_alcohol = is_alcohol
-        self.participants = []  
+
+    @property
+    def participants(self) ->list[str]:
+        conn = sqlite3.connect(DB_NAME)
+        cursor = conn.cursor()
+        cursor.execute("SELECT username FROM participants WHERE event_id = ?", (self.event_id,)) #spojení s databází SQL a výběr username pro odpovídající event_id
+        rows = cursor.fetchall()        #vytáhne všechny řádky z předchozího kroku (sqlite se chová tak, že vrací sadu tuples)
+        conn.close()
+        return [row[0] for row in rows]    #z každého tuple přečte první prvek- tedy username
 
     def is_full(self) -> bool:
         return len(self.participants) >= self.capacity  
 
     def add_participant(self, username: str) -> bool:
         if not self.is_full() and username not in self.participants:
-            self.participants.append(username)
+            conn = sqlite3.connect(DB_NAME)
+            cursor = conn.cursor()        #vytvářím metodu jak s databází, importovanou do proměnné conn, pracovat
+
+            cursor.execute("INSERT OR IGNORE INTO participants (event_id, username) VALUES (?, ?)", (self.event_id, username)) #vytvářím místo pro doplnění hodnot, přičemž hodnoty musí být ze seznamů v závorce za stringem- prevence sql injection
+
+            conn.commit()
+            conn.close()
             return True
         return False
 
+            
+           
+
     def remove_participant(self, username: str) -> bool:
         if username in self.participants:
-            self.participants.remove(username)
+            conn = sqlite3.connect(DB_NAME)
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM participants WHERE event_id = ? AND username = ?", (self.event_id, username))
+            conn.commit()
+            conn.close()
             return True
         return False
 
@@ -100,27 +156,78 @@ class EarlyBirdUser(User):
 
 class EventManager:
     def __init__(self):
+
+        init_db()
+        self.seed_initial_data() #příprava databáze a naplnění výchozími daty
+        
         self.users = {
             "Eda": AdminUser("Eda"),
             "Andy": SabotagedAdminUser("Andy"),
             "Zuzka": AlcoholIntolerantUser("Zuzka"),
             "Evžen": EarlyBirdUser("Evžen"),
         }
-        # Opravené datum a správné pořadí argumentů u Frisbee (kapacita 10, organizer Eda)
-        self.events = [
-            Event(1, "Ranní běh", "Sport", "2026 11 28", "6:30", "7:15", 9, "Eda", is_alcohol=False),
-            Event(2, "Python", "Vzdělávání", "2026 12 24", "18:00", "20:00", 2, "Eda", is_alcohol=False),
-            Event(3, "Věže", "Zábava", "2027 7 5", "8:00", "18:00", 4, "Eda", is_alcohol=True),
-            Event(4, "Frisbee", "Zábava", "2026 12 31", "18:00", "23:59", 10, "Eda", is_alcohol=False)
-        ]
+        self.load_events()
 
+    def seed_initial_data(self):
+
+        conn = sqlite3.connect(DB_NAME)
+        cursor = conn.cursor()
+        cursor.execute("SELECT COUNT(*) FROM events")    #spočítá počet řádků v tabulce
+
+        if cursor.fetchone()[0] == 0:    #pokud je počet řádků nula, vlož initial_events, cursor si pamatuje svůj aktuální stav a fetchone tu hodnotu volá
+            initial_events = [
+                (1, "Ranní běh", "Sport", "2026 11 28", "6:30", "7:15", 9, "Eda", 0),
+                (2, "Python", "Vzdělávání", "2026 12 24", "18:00", "20:00", 2, "Eda", 0),
+                (3, "Věže", "Zábava", "2027 7 5", "8:00", "18:00", 4, "Eda", 1),
+                (4, "Frisbee", "Zábava", "2026 12 31", "18:00", "23:59", 10, "Eda", 0)
+            ]
+            cursor.executemany("INSERT INTO events VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", initial_events)    #vložení matic akcí
+            conn.commit()
+        conn.close()
+
+    def load_events(self):
+        conn = sqlite3.connect(DB_NAME)
+        cursor = conn.cursor()
+        cursor.execute("SELECT event_id, title, category, date, start_time, end_time, capacity, organizer, is_alcohol FROM events")
+        rows = cursor.fetchall()    #uložení předchozího řádku do proměnné rows
+        conn.close()
+        
+        self.events = []    #vytvoření prázdného seznamu pro for cyklus
+        for row in rows:        
+            self.events.append(Event(
+                event_id=row[0],
+                title=row[1],
+                category=row[2],
+                date=row[3],
+                start_time=row[4],
+                end_time=row[5],
+                capacity=row[6],
+                organizer=row[7],
+                is_alcohol=bool(row[8])  
+            ))
+
+        
+        
     def get_user(self, name: str) -> User:
         return self.users.get(name)
 
     def add_event(self, title: str, category: str, date: str, start_time: str, end_time: str, capacity: int, organizer: str, is_alcohol: bool = False):
-        new_id = len(self.events) + 1
-        event = Event(new_id, title, category, date, start_time, end_time, capacity, organizer, is_alcohol)
-        self.events.append(event)
-        return event
+        conn = sqlite3.connect(DB_NAME)
+        cursor = conn.cursor()
+        
+        
+        cursor.execute("SELECT MAX(event_id) FROM events")    #maximální ID aby šlo přidat další akci
+        max_id = cursor.fetchone()[0]    #z předchozího řádku uloží první prvky (=event ID)
+        new_id = 1 if max_id is None else max_id + 1
+        
+        cursor.execute(
+            "INSERT INTO events VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (new_id, title, category, date, start_time, end_time, capacity, organizer, int(is_alcohol))
+        )
+        conn.commit()
+        conn.close()
+        
+        self.load_events()
+        return self.events[-1]    #poslední prvek v případě, že bych chtěl s poslední vloženou pracovat
 
 
