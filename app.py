@@ -136,7 +136,7 @@ if current_user.can_manage_events() and current_user.name != "Andy":
     with tab_nova_akce:
         st.subheader("Vytvořit novou akci")
 
-        with st.form("new_event_form"):,
+        with st.form("new_event_form"):
             new_title = st.text_input("Název", value=akce.title)
             new_cat = st.text_input("Kategorie", value=akce.category)
             new_date = st.text_input("Datum", value=akce.date.strftime("%Y %m %d"))
