@@ -8,6 +8,18 @@ if "manager" not in st.session_state:
 
 manager = st.session_state.manager
 
+import os
+
+# Tlačítko pro vyčištění databáze v bočním panelu
+if st.sidebar.button("Resetovat databázi"):
+    if os.path.exists("events_app.db"):
+        os.remove("events_app.db")
+    # Vymaže a vytvoří nového s čistou DB
+    if "manager" in st.session_state:
+        del st.session_state.manager
+    st.success("Databáze byla resetována")
+    st.rerun()
+
 # Výběr aktuálního uživatele v bočním panelu (Sidebar)
 user_names = list(manager.users.keys())
 selected_user_name = st.sidebar.selectbox("Přihlásit se jako:", user_names)
