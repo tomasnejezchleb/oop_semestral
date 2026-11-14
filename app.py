@@ -125,13 +125,16 @@ if current_user.can_manage_events() and current_user.name != "Andy":
                     new_alk = st.checkbox("Alkohol True?", value=akce.is_alcohol)
                     
                     if st.form_submit_button("Uložit změny"):
-                    
-                        manager.update_event(
+                        if new_title and new_cat and new_date and new_start and new_end and new_cap and new_org:
+                            manager.update_event(
                             akce.event_id, new_title, new_cat, new_date, 
                             new_start, new_end, int(new_cap), new_org, new_alk
                         )
-                        st.success("Upraveno!")
-                        st.rerun()
+                            st.success(f" Akce {new_title} byla vytvořena")
+                            st.rerun()
+                        else:
+                            st.error("chybějící pole")
+                
 
     with tab_nova_akce:
         st.subheader("Vytvořit novou akci")
@@ -147,11 +150,11 @@ if current_user.can_manage_events() and current_user.name != "Andy":
             new_alk = st.checkbox("Alkohol True?", value=akce.is_alcohol)
 
             if st.form_submit_button("Vytvořit akci"):
-                if new_title and new_date:
+                if new_title and new_cat and new_date and new_start and new_end and new_cap and new_org:
                     manager.add_event(
                         new_title, new_cat, new_date, new_start, new_end, int(new_cap), new_org, new_alk
                     )
-                    st.succedd(f" Akce {new_title} byla vytvořena")
+                    st.success(f" Akce {new_title} byla vytvořena")
                     st.rerun()
                 else:
                     st.error("chybějící pole")
