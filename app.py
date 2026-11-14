@@ -132,3 +132,26 @@ if current_user.can_manage_events() and current_user.name != "Andy":
                         )
                         st.success("Upraveno!")
                         st.rerun()
+
+    with tab_nova_akce:
+        st.subheader("Vytvořit novou akci")
+
+        with st.form("new_event_form"):,
+            new_title = st.text_input("Název", value=akce.title)
+            new_cat = st.text_input("Kategorie", value=akce.category)
+            new_date = st.text_input("Datum", value=akce.date.strftime("%Y %m %d"))
+            new_start = st.text_input("Začátek (HH:MM)", value=akce.start_time.strftime("%H:%M"))
+            new_end = st.text_input("Konec (HH:MM)", value=akce.end_time.strftime("%H:%M"))
+            new_cap = st.number_input("Kapacita", value=akce.capacity)
+            new_org = st.text_input("Organizátor", value=akce.organizer)
+            new_alk = st.checkbox("Alkohol True?", value=akce.is_alcohol)
+
+            if st.form_submit_button("Vytvořit akci"):
+                if new_title and new_date:
+                    manager.add_event(
+                        new_title, new_cat, new_date, new_start, new_end, int(new_cap), new_org, new_alk
+                    )
+                    st.succedd(f" Akce {new_title} byla vytvořena")
+                    st.rerun()
+                else:
+                    st.error("chybějící pole")
