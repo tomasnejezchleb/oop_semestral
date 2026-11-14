@@ -117,7 +117,7 @@ if current_user.can_manage_events() and current_user.name != "Andy":
                     
                     new_title = st.text_input("Název", value=akce.title)
                     new_cat = st.text_input("Kategorie", value=akce.category)
-                    new_date = st.text_input("Datum", value=akce.date.strftime("%Y %m %d"))
+                    new_date = st.text_input("Datum: Year Month Day", value=akce.date.strftime("%Y %m %d"))
                     new_start = st.text_input("Začátek (HH:MM)", value=akce.start_time.strftime("%H:%M"))
                     new_end = st.text_input("Konec (HH:MM)", value=akce.end_time.strftime("%H:%M"))
                     new_cap = st.number_input("Kapacita", value=akce.capacity)
@@ -139,7 +139,7 @@ if current_user.can_manage_events() and current_user.name != "Andy":
         with st.form("new_event_form"):
             new_title = st.text_input("Název", value=akce.title)
             new_cat = st.text_input("Kategorie", value=akce.category)
-            new_date = st.text_input("Datum Year Month Day", value=akce.date.strftime("%Y %m %d"))
+            new_date = st.text_input("Datum: Year Month Day", value=akce.date.strftime("%Y %m %d"))
             new_start = st.text_input("Začátek (HH:MM)", value=akce.start_time.strftime("%H:%M"))
             new_end = st.text_input("Konec (HH:MM)", value=akce.end_time.strftime("%H:%M"))
             new_cap = st.number_input("Kapacita", value=akce.capacity)
