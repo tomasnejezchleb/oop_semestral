@@ -93,46 +93,6 @@ class Event:
         return f"Event('{self.title}', {date_str} {start_str} - {end_str}, Volno: {self.capacity - len(self.participants)})"
 
 
-    def delete_event(self, event_id: int):
-        conn = sqlite3.connect(DB_NAME)
-        cursor = conn.cursor()
-
-        cursor.execute("DELETE FROM participants WHERE event_id = ?", (event_id,))    #smaže přihlášené
-
-        cursor.execute("DELETE FROM events WHERE event_id = ?", (event_id,))        #smaže akci
-        conn.commit()
-        conn.close()
-        self.load_events()
-
-    def update_event(self, event_id: int, title:str, category:str, date: str, start_time: str, end_time: str, capacity: int, organizer: str, is_alcohol: bool):
-        conn = sqlite3.connect(DB_NAME)
-        cursor = conn.cursor()
-        cursor.execute(
-            """UPDATE events 
-               SET title = ?, category = ?, date = ?, start_time = ?, end_time = ?, capacity = ?, organizer = ?, is_alcohol = ?
-               WHERE event_id = ?""",
-            (title, category, date, start_time, end_time, capacity, organizer, int(is_alcohol), event_id)
-        )
-        conn.commit()
-        conn.close()
-        self.load_events()
-
-    def add_user(self, name: str, user_type: str, extra_param: str = None):
-
-        if user_type == "Admin":
-            self.users[name] = AdminUser(name)
-        elif user_type == "Andy":
-            self.users[name] = SabotagedAdminUser(name)
-        elif user_type == "abstinent":
-            self.users[name] = AlcoholIntolerantUser(name)
-        elif user_type == "Early Bird":
-            max_h = extra_param if extra_param else "18:25"
-            self.users[name] = EarlyBirdUser(name, max_h)
-
-    def remove_user(self, name: str):
-        #funguje jen pro nedefaultní usery
-        if name in self.users:
-            del self.users[name]
 
 class User(ABC):
     def __init__(self, name: str):
@@ -252,6 +212,47 @@ class EventManager:
         
     def get_user(self, name: str) -> User:
         return self.users.get(name)
+
+    def delete_event(self, event_id: int):
+        conn = sqlite3.connect(DB_NAME)
+        cursor = conn.cursor()
+
+        cursor.execute("DELETE FROM participants WHERE event_id = ?", (event_id,))    #smaže přihlášené
+
+        cursor.execute("DELETE FROM events WHERE event_id = ?", (event_id,))        #smaže akci
+        conn.commit()
+        conn.close()
+        self.load_events()
+
+    def update_event(self, event_id: int, title:str, category:str, date: str, start_time: str, end_time: str, capacity: int, organizer: str, is_alcohol: bool):
+        conn = sqlite3.connect(DB_NAME)
+        cursor = conn.cursor()
+        cursor.execute(
+            """UPDATE events 
+               SET title = ?, category = ?, date = ?, start_time = ?, end_time = ?, capacity = ?, organizer = ?, is_alcohol = ?
+               WHERE event_id = ?""",
+            (title, category, date, start_time, end_time, capacity, organizer, int(is_alcohol), event_id)
+        )
+        conn.commit()
+        conn.close()
+        self.load_events()
+
+    def add_user(self, name: str, user_type: str, extra_param: str = None):
+
+        if user_type == "Admin":
+            self.users[name] = AdminUser(name)
+        elif user_type == "Andy":
+            self.users[name] = SabotagedAdminUser(name)
+        elif user_type == "abstinent":
+            self.users[name] = AlcoholIntolerantUser(name)
+        elif user_type == "Early Bird":
+            max_h = extra_param if extra_param else "18:25"
+            self.users[name] = EarlyBirdUser(name, max_h)
+
+    def remove_user(self, name: str):
+        #funguje jen pro nedefaultní usery
+        if name in self.users:
+            del self.users[name]
 
     def add_event(self, title: str, category: str, date: str, start_time: str, end_time: str, capacity: int, organizer: str, is_alcohol: bool = False):
         conn = sqlite3.connect(DB_NAME)
