@@ -170,3 +170,53 @@ if current_user.can_manage_events() and current_user.name != "Andy":
                     st.rerun()
                 else:
                     st.error("chybějící pole")
+
+    with tab_uzivatele:
+        st.subheader("Seznam uživatelů")
+
+        for u_name, u_obj in list(manager.users.items()):
+            col1, col2 = st.columns([3,1])
+            with col1:
+                role_name = type(u_obj).__name__    #magic method name vytáhne AdminUser, ALcoholIntolerantUser...jako string
+
+                detail = ""     #vytvoření prázdné string
+                if isinstance(u_obj, EarlyBirdUser): #pokud je instancí třídy earlybirduser
+                    detail = f" (Limit do {u_obj.max_hour.strftime('%H:%M')})
+                st.write(f"**{u_name}** — *Typ:* `{role_name}`{detail}")
+
+            with col2: #do užšího sloupce (1/4) tlačítka
+                if u_name != "Eda":
+                    if st.button("Smazat uživatele", key=f"del_user_{u_name}"):
+                        manager.remove_user(u_name)
+                        st.success(f"Uživatel {u_name} byl odstraněn.")
+                        st.rerun()
+                else:
+                    st.write("Nope. Administrátor nelze smazat")
+
+
+        st.divider()
+        st.subheader("přidat nového uživatele")
+
+        with st.form("new_user_form"):
+            new_u_name = st.text_input("Jméno uživatele")
+            new_u_type = st.selectbox(
+                "Typ uživatele (Role)", 
+                ["Admin", "Andy", "abstinent", "Early Bird"]
+            )
+            if new_u_type == "Early Bird":
+                new_u_extra = st.text_input(
+                    "Early Bird limit (HH:MM - platí jen pro Early Bird)", 
+                    value="18:25"
+                    )
+
+            if st.form_submit_button("Vytvořit uživatele"):
+                if new_u_name.strip():
+                    if new_u_name in manager.users:
+                        st.error("Uživatel s tímto jménem již existuje!")
+                    else:
+                        manager.add_user(new_u_name, new_u_type, new_u_extra)
+                        st.success(f"Uživatel '{new_u_name}' byl úspěšně vytvořen!")
+                        st.rerun()
+                else:
+                    st.error("Zadej prosím jméno uživatele.")
+
