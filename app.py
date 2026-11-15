@@ -181,7 +181,7 @@ if current_user.can_manage_events() and current_user.name != "Andy":
 
                 detail = ""     #vytvoření prázdné string
                 if isinstance(u_obj, EarlyBirdUser): #pokud je instancí třídy earlybirduser
-                    detail = f" (Limit do {u_obj.max_hour.strftime('%H:%M')})
+                    detail = (f" (Limit do {u_obj.max_hour.strftime('%H:%M')})")
                 st.write(f"**{u_name}** — *Typ:* `{role_name}`{detail}")
 
             with col2: #do užšího sloupce (1/4) tlačítka
@@ -203,6 +203,7 @@ if current_user.can_manage_events() and current_user.name != "Andy":
                 "Typ uživatele (Role)", 
                 ["Admin", "Andy", "abstinent", "Early Bird"]
             )
+            new_u_extra = "cokoli"  #string jen musí existovat, aby se v manage.add_user nnevyvolala chyba chybějícím argumentem. Early bird si string přepíše, ostatní třídy to zahodí
             if new_u_type == "Early Bird":
                 new_u_extra = st.text_input(
                     "Early Bird limit (HH:MM - platí jen pro Early Bird)", 
