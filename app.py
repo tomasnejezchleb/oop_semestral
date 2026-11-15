@@ -1,6 +1,6 @@
 import streamlit as st
 from classes import EventManager, AndySabotageException
-from classes import Event, AdminUser, SabotageAdminUser, AlcoholIntolerantUser, EarlyBirdUser
+from classes import Event, AdminUser, SabotagedAdminUser, AlcoholIntolerantUser, EarlyBirdUser
 
 
 # Inicializace managera v session state, aby se resetem vymazal stav
