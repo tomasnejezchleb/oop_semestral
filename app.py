@@ -210,10 +210,11 @@ if current_user.can_manage_events() and current_user.name != "Andy":
             if st.session_state.get("selected_user_type") == "Early Bird":
                 new_u_extra = st.text_input(
                     "Early Bird limit (HH:MM - platí jen pro Early Bird)", 
-                    value="18:25"
+                    value="18:25",
+                    key="early_bird_limit_input"
                 )
 
-            if st.form_submit_button("Vytvořit uživatele"):
+            if st.button("Vytvořit uživatele"):
                 if new_u_name.strip():
                     if new_u_name in manager.users:
                         st.error("Uživatel s tímto jménem již existuje!")
