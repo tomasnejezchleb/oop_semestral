@@ -119,6 +119,12 @@ if current_user.can_manage_events() and current_user.name != "Andy":
             col1, col2 = st.columns([3, 1])
             with col1:
                 st.write(f"**{akce.title}** ({akce.date.strftime('%d.%m.%Y')})")
+
+                if akce.participants and current_user.can_manage_events():
+                    ucastnici_str = ", ".join(akce.participants)
+                    st.caption(f"Přihlášeni: {ucastnici_str}")
+                else:
+                    pass
             with col2:
                 if st.button('Smazat', key=f"admin_del_{akce.event_id}"):
                     manager.delete_event(akce.event_id)
