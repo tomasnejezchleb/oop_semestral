@@ -202,14 +202,16 @@ if current_user.can_manage_events() and current_user.name != "Andy":
             new_u_name = st.text_input("Jméno uživatele")
             new_u_type = st.selectbox(
                 "Typ uživatele (Role)", 
-                ["Admin", "Andy", "abstinent", "Early Bird"]
+                ["Admin", "Andy", "abstinent", "Early Bird"],
+                key = "selected_user_type"
             )
             new_u_extra = "cokoli"  #string jen musí existovat, aby se v manage.add_user nnevyvolala chyba chybějícím argumentem. Early bird si string přepíše, ostatní třídy to zahodí
-            if new_u_type == "Early Bird":
+
+            if st.session_state.get("selected_user_type") == "Early Bird":
                 new_u_extra = st.text_input(
                     "Early Bird limit (HH:MM - platí jen pro Early Bird)", 
                     value="18:25"
-                    )
+                )
 
             if st.form_submit_button("Vytvořit uživatele"):
                 if new_u_name.strip():
