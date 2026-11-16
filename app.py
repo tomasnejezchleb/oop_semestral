@@ -198,30 +198,29 @@ if current_user.can_manage_events() and current_user.name != "Andy":
         st.divider()
         st.subheader("přidat nového uživatele")
 
-        with st.form("new_user_form"):
-            new_u_name = st.text_input("Jméno uživatele")
-            new_u_type = st.selectbox(
+        new_u_name = st.text_input("Jméno uživatele")
+        new_u_type = st.selectbox(
                 "Typ uživatele (Role)", 
                 ["Admin", "Andy", "abstinent", "Early Bird"],
                 key = "selected_user_type"
             )
-            new_u_extra = "cokoli"  #string jen musí existovat, aby se v manage.add_user nnevyvolala chyba chybějícím argumentem. Early bird si string přepíše, ostatní třídy to zahodí
+        new_u_extra = "cokoli"  #string jen musí existovat, aby se v manage.add_user nnevyvolala chyba chybějícím argumentem. Early bird si string přepíše, ostatní třídy to zahodí
 
-            if st.session_state.get("selected_user_type") == "Early Bird":
+        if st.session_state.get("selected_user_type") == "Early Bird":
                 new_u_extra = st.text_input(
                     "Early Bird limit (HH:MM - platí jen pro Early Bird)", 
                     value="18:25",
                     key="early_bird_limit_input"
                 )
 
-            if st.button("Vytvořit uživatele"):
-                if new_u_name.strip():
-                    if new_u_name in manager.users:
+        if st.button("Vytvořit uživatele"):
+            if new_u_name.strip():
+                if new_u_name in manager.users:
                         st.error("Uživatel s tímto jménem již existuje!")
-                    else:
+                else:
                         manager.add_user(new_u_name, new_u_type, new_u_extra)
                         st.success(f"Uživatel '{new_u_name}' byl úspěšně vytvořen!")
                         st.rerun()
-                else:
+            else:
                     st.error("Zadej prosím jméno uživatele.")
 
