@@ -3,7 +3,7 @@ from classes import EventManager, AndySabotageException
 from classes import Event, AdminUser, SabotagedAdminUser, AlcoholIntolerantUser, EarlyBirdUser
 
 
-# Inicializace managera v session state, aby se resetem vymazal stav
+# Inicializace managera v session state. Podmínka, aby se po každé akci neinicializoval znovu
 if "manager" not in st.session_state:
     st.session_state.manager = EventManager()
 
