@@ -148,12 +148,12 @@ if current_user.can_manage_events():
                         if new_title and new_cat and new_date and new_start and new_end and new_cap and new_org:
                             try:
                                current_user.perform_admin_action(f"Úprava akce{akce.title}") 
-                                manager.update_event(
+                               manager.update_event(
                                 akce.event_id, new_title, new_cat, new_date, 
                                 new_start, new_end, int(new_cap), new_org, new_alk
                                     )
-                                st.success(f" Akce {new_title} byla upravena")
-                                st.rerun()
+                               st.success(f" Akce {new_title} byla upravena")
+                               st.rerun()
                             except AndySabotageException as e:
                                 st.error(str(e))
                         else:
