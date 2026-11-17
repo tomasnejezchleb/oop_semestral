@@ -81,7 +81,7 @@ st.divider()
 
 st.subheader("Přihlášené akce:")
 
-moje_akce = [a for a in manager.events if current_user.name in a.participants]
+moje_akce = [a for a in manager.events if current_user.name in a.participants]    #for cyklem projede akce a testuje shodu current_user a prvky participants
 
 if not moje_akce:    #testuje prázdnost seznamu
     st.info("Žádné přihlášené akce")
@@ -102,7 +102,7 @@ else:
                 st.success(f"Byl jsi odhlášen z akce {akce.title}")
                 st.rerun()
 
-if current_user.can_manage_events() and current_user.name != "Andy":
+if current_user.can_manage_events():
     st.divider()
     st.header("administrátorský panel")
 
