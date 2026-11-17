@@ -14,10 +14,10 @@ import os
 # Tlačítko pro vyčištění databáze v bočním panelu
 if st.sidebar.button("Resetovat databázi"):
     if os.path.exists("events_app.db"):
-        os.remove("events_app.db")
+        os.remove("events_app.db")    #existuje soubor s databází? if true, smaže ho
     # Vymaže a vytvoří nového s čistou DB
     if "manager" in st.session_state:
-        del st.session_state.manager
+        del st.session_state.manager    #existuje instance EventManagera (manager)? If true, smaže ho
     st.success("Databáze byla resetována")
     st.rerun()
 
@@ -43,7 +43,7 @@ if st.sidebar.button("Provést administrátorskou akci"):
 # Hlavní stránka – ukázka filtrování akcí pro vybraného uživatele
 st.header(f"Vítej, {current_user.name}!")
 filtr_dle_usera = current_user.filter_events(manager.events)
-dostupne_akce = [a for a in filtr_dle_usera if current_user.name not in a.participants]
+dostupne_akce = [a for a in filtr_dle_usera if current_user.name not in a.participants]    #filtr + nezobrazení již přihlášených akcí
 
 st.subheader("Dostupné akce:")
 
@@ -60,7 +60,7 @@ for akce in dostupne_akce:
         kapacita_html = f"<span style= 'color: red; font-weight: bold;'>Kapacita vyčerpána</span>"
 
 
-    col1, col2 = st.columns([3, 1])
+    col1, col2 = st.columns([3, 1])    #poměr šířky sloupců
 
     with col1:
         st.markdown(
@@ -68,18 +68,14 @@ for akce in dostupne_akce:
             unsafe_allow_html=True)
 
     with col2:
-        already_signed = current_user.name in akce.participants
-
-        if already_signed:
-            st.write("Přihlášen")
-        else:
-            if st.button("Přihlásit", key = f"prihlas_{akce.event_id}"):
+        
+        if st.button("Přihlásit", key = f"prihlas_{akce.event_id}"):
                 uspech = akce. add_participant(current_user.name)
-                if uspech or current_user.name in akce.participants:
+                if uspech:
                     st.success("Jsi přihlášen")
                     st.rerun()
                 else:
-                    st.error("Akce je plná nebo si se už přihlásil")
+                    st.error("Akce je plná nebo error")
 
 st.divider()
 
@@ -88,7 +84,7 @@ st.subheader("Přihlášené akce:")
 moje_akce = [a for a in manager.events if current_user.name in a.participants]
 
 if not moje_akce:    #testuje prázdnost seznamu
-    date_str = akce.date.strftime("%d. %m. %Y")
+    st.info("Žádné přihlášené akce")
 else:
     for akce in moje_akce:
         date_str = akce.date.strftime("%d. %m. %Y")
