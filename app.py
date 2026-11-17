@@ -201,7 +201,7 @@ if current_user.can_manage_events():    #tzn budou panel vidět instance admina 
                 st.write(f"**{u_name}** — *Typ:* `{role_name}`{detail}")
 
             with col2: #do užšího sloupce (1/4) tlačítka
-                if u_name != "Eda":
+                if not isinstance(u_obj, AdminUser):    #nepůjde smazat, pokud instance admina
                     if st.button("Smazat uživatele", key=f"del_user_{u_name}"):
                         try:
                             current_user.perform_admin_action("Smazání uživatele")
