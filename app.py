@@ -123,8 +123,13 @@ if current_user.can_manage_events():
                     pass
             with col2:
                 if st.button('Smazat', key=f"admin_del_{akce.event_id}"):
-                    manager.delete_event(akce.event_id)
-                    st.rerun()
+                    try:
+                        current_user.perform_admin_action(f"Smazání akce{akce.title}")
+                        manager.delete_event(akce.event_id)
+                        st.success("Smazáno")
+                        st.rerun()
+                    except AndySabotageException as e:
+                        st.error(str(e))
 
             
             with st.expander(f"Upravit: {akce.title}"):
