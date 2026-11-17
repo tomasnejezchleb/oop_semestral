@@ -146,12 +146,16 @@ if current_user.can_manage_events():
                     
                     if st.form_submit_button("Uložit změny"):
                         if new_title and new_cat and new_date and new_start and new_end and new_cap and new_org:
-                            manager.update_event(
-                            akce.event_id, new_title, new_cat, new_date, 
-                            new_start, new_end, int(new_cap), new_org, new_alk
-                        )
-                            st.success(f" Akce {new_title} byla vytvořena")
-                            st.rerun()
+                            try:
+                               current_user.perform_admin_action(f"Úprava akce{akce.title}") 
+                                manager.update_event(
+                                akce.event_id, new_title, new_cat, new_date, 
+                                new_start, new_end, int(new_cap), new_org, new_alk
+                                    )
+                                st.success(f" Akce {new_title} byla upravena")
+                                st.rerun()
+                            except AndySabotageException as e:
+                                st.error(str(e))
                         else:
                             st.error("chybějící pole")
                 
@@ -160,22 +164,26 @@ if current_user.can_manage_events():
         st.subheader("Vytvořit novou akci")
 
         with st.form("new_event_form"):
-            new_title = st.text_input("Název", value=akce.title)
-            new_cat = st.text_input("Kategorie", value=akce.category)
-            new_date = st.text_input("Datum: Year Month Day", value=akce.date.strftime("%Y %m %d"))
-            new_start = st.text_input("Začátek (HH:MM)", value=akce.start_time.strftime("%H:%M"))
-            new_end = st.text_input("Konec (HH:MM)", value=akce.end_time.strftime("%H:%M"))
-            new_cap = st.number_input("Kapacita", value=akce.capacity)
-            new_org = st.text_input("Organizátor", value=akce.organizer)
-            new_alk = st.checkbox("Alkohol True?", value=akce.is_alcohol)
+            new_title = st.text_input("Název")
+            new_cat = st.text_input("Kategorie")
+            new_date = st.text_input("Datum: Year Month Day", value="2026 11 28")
+            new_start = st.text_input("Začátek (HH:MM)", value=10:00 ("%H:%M"))
+            new_end = st.text_input("Konec (HH:MM)", value=12:00("%H:%M"))
+            new_cap = st.number_input("Kapacita", value=5)
+            new_org = st.text_input("Organizátor", value=current_user.name)
+            new_alk = st.checkbox("Alkohol True?", value=False)
 
             if st.form_submit_button("Vytvořit akci"):
                 if new_title and new_cat and new_date and new_start and new_end and new_cap and new_org:
-                    manager.add_event(
-                        new_title, new_cat, new_date, new_start, new_end, int(new_cap), new_org, new_alk
-                    )
-                    st.success(f" Akce {new_title} byla vytvořena")
-                    st.rerun()
+                    try:
+                        current_user.perform_admin_action(f"Vytvoření akce {akce.title}")
+                        manager.add_event(
+                            new_title, new_cat, new_date, new_start, new_end, int(new_cap), new_org, new_alk
+                                )
+                        st.success(f" Akce {new_title} byla vytvořena")
+                        st.rerun()
+                    except AndySabotageException as e:
+                        st.error(str(e))
                 else:
                     st.error("chybějící pole")
 
@@ -195,9 +203,13 @@ if current_user.can_manage_events():
             with col2: #do užšího sloupce (1/4) tlačítka
                 if u_name != "Eda":
                     if st.button("Smazat uživatele", key=f"del_user_{u_name}"):
-                        manager.remove_user(u_name)
-                        st.success(f"Uživatel {u_name} byl odstraněn.")
-                        st.rerun()
+                        try:
+                            current_user.perform_admin_action("Smazání uživatele")
+                            manager.remove_user(u_name)
+                            st.success(f"Uživatel {u_name} byl odstraněn.")
+                            st.rerun()
+                        except AndySabotageException as e:
+                            st.error(str(e))
                 else:
                     st.write("Nope. Administrátor nelze smazat")
 
@@ -221,13 +233,19 @@ if current_user.can_manage_events():
                 )
 
         if st.button("Vytvořit uživatele"):
-            if new_u_name.strip():
-                if new_u_name in manager.users:
+            try:
+                current_user.perform_admin_action("přidání uživatele")
+                if new_u_name.strip():
+                    if new_u_name in manager.users:
                         st.error("Uživatel s tímto jménem již existuje!")
-                else:
+                    else:
                         manager.add_user(new_u_name, new_u_type, new_u_extra)
                         st.success(f"Uživatel '{new_u_name}' byl úspěšně vytvořen!")
                         st.rerun()
-            else:
+        
+                else:
                     st.error("Zadej prosím jméno uživatele.")
+
+            except AndySabotageException as e:
+                st.error(str(e))
 
