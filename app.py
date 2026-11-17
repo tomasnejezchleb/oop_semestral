@@ -102,7 +102,7 @@ else:
                 st.success(f"Byl jsi odhlášen z akce {akce.title}")
                 st.rerun()
 
-if current_user.can_manage_events():
+if current_user.can_manage_events():    #tzn budou panel vidět instance admina i sabotaged admina
     st.divider()
     st.header("administrátorský panel")
 
@@ -124,7 +124,7 @@ if current_user.can_manage_events():
             with col2:
                 if st.button('Smazat', key=f"admin_del_{akce.event_id}"):
                     try:
-                        current_user.perform_admin_action(f"Smazání akce{akce.title}")
+                        current_user.perform_admin_action(f"Smazání akce")    #tady se sabotaged admin zasekne a na řádek manager.delete už nepokračuje, skočí do větve except
                         manager.delete_event(akce.event_id)
                         st.success("Smazáno")
                         st.rerun()
@@ -147,7 +147,7 @@ if current_user.can_manage_events():
                     if st.form_submit_button("Uložit změny"):
                         if new_title and new_cat and new_date and new_start and new_end and new_cap and new_org:
                             try:
-                               current_user.perform_admin_action(f"Úprava akce{akce.title}") 
+                               current_user.perform_admin_action(f"Úprava akce") 
                                manager.update_event(
                                 akce.event_id, new_title, new_cat, new_date, 
                                 new_start, new_end, int(new_cap), new_org, new_alk
@@ -176,7 +176,7 @@ if current_user.can_manage_events():
             if st.form_submit_button("Vytvořit akci"):
                 if new_title and new_cat and new_date and new_start and new_end and new_cap and new_org:
                     try:
-                        current_user.perform_admin_action(f"Vytvoření akce {akce.title}")
+                        current_user.perform_admin_action(f"Vytvoření akce")
                         manager.add_event(
                             new_title, new_cat, new_date, new_start, new_end, int(new_cap), new_org, new_alk
                                 )
