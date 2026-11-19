@@ -6,4 +6,4 @@ Větev obsahuje testy pro `Event`, `EventManager`, uživatelské třídy (`Admin
 
 ```bash
 pip install pytest
-python -m pytest classes_test.py
+python -m pytest classes_tests.py
