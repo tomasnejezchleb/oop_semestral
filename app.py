@@ -40,7 +40,7 @@ if st.sidebar.button("Provést administrátorskou akci"):
     except Exception as e:
         st.sidebar.error(str(e))
 
-# Hlavní stránka – ukázka filtrování akcí pro vybraného uživatele
+# Hlavní stránka – filtrování akcí pro vybraného uživatele
 st.header(f"Vítej, {current_user.name}!")
 filtr_dle_usera = current_user.filter_events(manager.events)
 dostupne_akce = [a for a in filtr_dle_usera if current_user.name not in a.participants]    #filtr + nezobrazení již přihlášených akcí
@@ -135,12 +135,13 @@ if current_user.can_manage_events():    #tzn budou panel vidět instance admina 
             with st.expander(f"Upravit: {akce.title}"):
                 with st.form(key=f"edit_form_{akce.event_id}"):
                     
+                    
                     new_title = st.text_input("Název", value=akce.title)
                     new_cat = st.text_input("Kategorie", value=akce.category)
                     new_date = st.text_input("Datum: Year Month Day", value=akce.date.strftime("%Y %m %d"))
                     new_start = st.text_input("Začátek (HH:MM)", value=akce.start_time.strftime("%H:%M"))
                     new_end = st.text_input("Konec (HH:MM)", value=akce.end_time.strftime("%H:%M"))
-                    new_cap = st.number_input("Kapacita", value=akce.capacity)
+                    new_cap = st.number_input("Kapacita", min_value=1, value=max(1, akce.capacity))
                     new_org = st.text_input("Organizátor", value=akce.organizer)
                     new_alk = st.checkbox("Alkohol True?", value=akce.is_alcohol)
                     
@@ -156,6 +157,8 @@ if current_user.can_manage_events():    #tzn budou panel vidět instance admina 
                                st.rerun()
                             except AndySabotageException as e:
                                 st.error(str(e))
+                            except ValueError:
+                                st.error("Neplatný formát data (RRRR MM DD) nebo času (HH:MM).") 
                         else:
                             st.error("chybějící pole")
                 
@@ -169,7 +172,7 @@ if current_user.can_manage_events():    #tzn budou panel vidět instance admina 
             new_date = st.text_input("Datum: Year Month Day", value="2026 11 28")
             new_start = st.text_input("Začátek (HH:MM)", value="10:00")
             new_end = st.text_input("Konec (HH:MM)", value="12:00")
-            new_cap = st.number_input("Kapacita", value=5)
+            new_cap = st.number_input("Kapacita", min_value=1, value=5)
             new_org = st.text_input("Organizátor", value=current_user.name)
             new_alk = st.checkbox("Alkohol True?", value=False)
 
@@ -184,6 +187,8 @@ if current_user.can_manage_events():    #tzn budou panel vidět instance admina 
                         st.rerun()
                     except AndySabotageException as e:
                         st.error(str(e))
+                    except ValueError:
+                        st.error("Neplatný formát data (RRRR MM DD) nebo času (HH:MM).")
                 else:
                     st.error("chybějící pole")
 
@@ -235,12 +240,14 @@ if current_user.can_manage_events():    #tzn budou panel vidět instance admina 
         if st.button("Vytvořit uživatele"):
             try:
                 current_user.perform_admin_action("přidání uživatele")
-                if new_u_name.strip():
-                    if new_u_name in manager.users:
+                clean_name = new_u_name.strip()
+                if clean_name:
+                    existing_lower = {u.lower() for u in manager.users}
+                    if clean_name.lower() in existing_lower:
                         st.error("Uživatel s tímto jménem již existuje!")
                     else:
-                        manager.add_user(new_u_name, new_u_type, new_u_extra)
-                        st.success(f"Uživatel '{new_u_name}' byl úspěšně vytvořen!")
+                        manager.add_user(clean_name, new_u_type, new_u_extra)
+                        st.success(f"Uživatel '{clean_name}' byl úspěšně vytvořen!")
                         st.rerun()
         
                 else:
