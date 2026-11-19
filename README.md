@@ -8,5 +8,8 @@
 
 ### 2. Automatizované testování
 
-* Návrh a spuštění automatizovaných UI testů přes `streamlit.testing.v1.AppTest` v izolovaném prostředí (dočasný adresář a samostatná testovací databáze, aby nedocházelo k zásahům do ostrých dat).
-* Pokrytí klíčových scénářů: přepínání uživatelů a rolí, chování `SabotagedAdminUser` při pokusu o správu, přihlášení na akci a změna kapacity, odmítnutí duplicitního jména s jinou velikostí písmen a ošetření neplatného formátu data/času bez neošetřené výjimky.
+
+* Pokrytí scénářů: přepínání uživatelů a rolí, chování SabotagedAdminUser při pokusu o akci, odmítnutí duplicitního jména s jinou velikostí písmen a ošetření neplatného formátu data.
+
+```bash
+pytest test_interface.py
