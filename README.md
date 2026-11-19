@@ -1,4 +1,4 @@
-# Testy – správa událostí
+# Testy
 
 Větev obsahuje testy pro `Event`, `EventManager`, uživatelské třídy (`AdminUser`, `SabotagedAdminUser`, `AlcoholIntolerantUser`, `EarlyBirdUser`) a ukládání do SQLite (`events_app.db`).
 
